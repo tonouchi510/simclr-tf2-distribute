@@ -36,10 +36,6 @@ flags.DEFINE_string(
     'job_dir', None,
     'GCS path for training job management.')
 
-flags.DEFINE_string(
-    'pretrain_model', None,
-    'pretrain model path.')
-
 flags.DEFINE_integer(
     'percentage', 100,
     'percentage of dataset for using finetune.')
@@ -50,7 +46,7 @@ flags.DEFINE_string(
 
 
 def build_model(num_classes: int) -> (any, int):
-    base_model = tf.keras.models.load_model(FLAGS.pretrain_model)
+    base_model = tf.keras.models.load_model(f"{FLAGS.job_dir}/pretrain/saved_model)
     base_model.trainable = True
 
     feature = None
@@ -108,16 +104,16 @@ def main(argv):
                   metrics=["accuracy"])
     model.summary()
 
-    tboard_callback = tf.keras.callbacks.TensorBoard(log_dir=f"{FLAGS.job_dir}/logs", histogram_freq=1)
+    tboard_callback = tf.keras.callbacks.TensorBoard(log_dir=f"{FLAGS.job_dir}/finetune/logs", histogram_freq=1)
     callbacks = [tboard_callback]
 
     train_ds = get_dataset(FLAGS.dataset, "train", read_tfrecord, FLAGS.global_batch_size, input_size, FLAGS.percentage)
     valid_ds = get_dataset(FLAGS.dataset, "valid", read_tfrecord, FLAGS.global_batch_size, input_size, FLAGS.percentage)
     for epoch in range(FLAGS.epochs):
         model.fit(train_ds, validation_data=valid_ds, callbacks=callbacks, initial_epoch=epoch, epochs=epoch+1)
-        model.save(f"{FLAGS.job_dir}/checkpoints/{epoch+1}", include_optimizer=True)
+        model.save(f"{FLAGS.job_dir}/finetune/checkpoints/{epoch+1}", include_optimizer=True)
     
-    model.save(f"{FLAGS.job_dir}/saved_model", include_optimizer=False)
+    model.save(f"{FLAGS.job_dir}/finetune/saved_model", include_optimizer=False)
 
 
 if __name__ == '__main__':

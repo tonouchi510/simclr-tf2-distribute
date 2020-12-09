@@ -34,10 +34,6 @@ flags.DEFINE_integer(
     'embedded_dim', 128,
     'n_dim for projection_head_3.')
 
-flags.DEFINE_float(
-    'proj_head', 1,
-    'Projection_Head using finetune.')
-
 flags.DEFINE_string(
     'dataset', 'gs://{{bucket-name}}/{{tfrecord_dir}}',
     'Directory where dataset is stored.')
@@ -132,15 +128,15 @@ def main(argv):
                          metrics=None)
     simclr_model.summary()
 
-    tboard_callback = tf.keras.callbacks.TensorBoard(log_dir=f"{FLAGS.job_dir}/logs", histogram_freq=1)
+    tboard_callback = tf.keras.callbacks.TensorBoard(log_dir=f"{FLAGS.job_dir}/pretrain/logs", histogram_freq=1)
     callbacks = [tboard_callback]
 
     train_ds = get_dataset(FLAGS.dataset, "train", read_tfrecord, FLAGS.global_batch_size, input_size)
     for epoch in range(FLAGS.epochs):
         simclr_model.fit(train_ds, callbacks=callbacks, initial_epoch=epoch, epochs=epoch+1)
-        simclr_model.save(f"{FLAGS.job_dir}/checkpoints/{epoch+1}", include_optimizer=True)
+        simclr_model.save(f"{FLAGS.job_dir}/pretrain/checkpoints/{epoch+1}", include_optimizer=True)
     
-    simclr_model.save(f"{FLAGS.job_dir}/saved_model", include_optimizer=False)
+    simclr_model.save(f"{FLAGS.job_dir}/pretrain/saved_model", include_optimizer=False)
 
 
 if __name__ == '__main__':
