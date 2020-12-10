@@ -30,14 +30,41 @@ The differences in my implementation are the following points,
   - Easy to use various callbacks, saving the state of the optimizer during training, etc.
 - Use cloud-tpu for training. 
 
-## Usage
-#### Pre-required
+# Usage
+### Pre-required
 To train with CloudTPU, you need to prepare for the following,
 - Setup GCP project and enable CloudTPU
 - Convert the dataset to TFRecord files and upload to GCS.
   - When use TPU, all the files used during training need to be put in GCS.
+  - example：gs://{{bucket_name}}/{{dataset_name}}/train-00001.tfrec ...
+  - Click [here](https://www.tensorflow.org/tutorials/load_data/tfrecord) for documentation on tfrecord.
 
-#### Pretrain
+```
+# Structure of gcs bucket (For your reference).
+gs://{{bucket_name}}/
+
+├── datasets
+│   ├── dataset-A
+│   └── dataset-B
+│       ├── train-00001.tfrec
+│       ├── train-00002.tfrec
+│       ├── ...
+│       ├── valid-00149.tfrec
+│       └── valid-00150.tfrec
+└── jobs
+    ├── job-A
+    ├── job-B
+    └── job-C
+        ├── pretrain
+        │   ├── checkpoints
+        │   ├── logs
+        │   └── saved_model
+        ├── finetune
+        ├── extract-feature
+        └── linear-evaluation
+```
+
+### Pretrain
 
 ```
 $ python pretrain.py --global_batch_size=1024 --epochs=50 --learning_rate=0.0001 \
@@ -45,10 +72,23 @@ $ python pretrain.py --global_batch_size=1024 --epochs=50 --learning_rate=0.0001
     --model="resnet" --job_dir=gs://{{bucket-name}}/{{job_dir}}
 ```
 
-#### Finetune
+### Finetune
 
 ```
 $ python finetune.py --global_batch_size=1024 --epochs=50 --learning_rate=0.0001 --proj_head=1 \
     --percentage=10 --num_classes=1000 --dataset=gs://{{bucket-name}}/{{tfrecord_dir}} \
     --job_dir=gs://{{bucket-name}}/{{job_dir}}
 ```
+
+### Linear Evaluation
+
+```
+# extract
+$ python scripts/extract_feature.py --batch_size=512 --proj_head=1 --dataset=gs://{{bucket-name}}/{{tfrecord_dir}} \
+    --job_dir=gs://{{bucket-name}}/{{job_dir}} --le_target="finetune"
+
+# linear evaluation
+$ python scripts/linear-evaluation.py --batch_size=512 --job_dir=gs://{{bucket-name}}/{{job_dir}} \
+     --embedded_dim=512 --num_classes=1000
+```
+
