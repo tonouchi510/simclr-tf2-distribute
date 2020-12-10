@@ -1,10 +1,16 @@
 # simclr-tf2-distribute
 Implementation of [SimCLR](https://arxiv.org/abs/2002.05709) with TensorFlow 2 / `tf.distribute.Strategy`.
 
+<div align="center">
+  <img src="https://github.com/tonouchi510/simclr-tf2-distribute/blob/main/figs/illustration-of-the-proposed-SimCLR-framework.gif" width="550px">
+</div>
+
+<br>
+
 SimCLR needs to be trained in a huge batch size, so it is practically necessary to support distributed learning.
 
 <div align="center">
-<img src="https://github.com/tonouchi510/simclr-tf2-distribute/blob/main/figs/simclr-figure-9.png" width="600px">
+  <img src="https://github.com/tonouchi510/simclr-tf2-distribute/blob/main/figs/simclr-figure-9.png" width="500px">
 </div>
 
 This time, use [TPU Strategy](https://www.tensorflow.org/guide/distributed_training#tpustrategy)(If you use 8-cores, CloudTPU is more inexpensive than GPU).
@@ -25,7 +31,6 @@ The differences in my implementation are the following points,
 - Use cloud-tpu for training. 
 
 ## Usage
-
 #### Pre-required
 To train with CloudTPU, you need to prepare for the following,
 - Setup GCP project and enable CloudTPU
