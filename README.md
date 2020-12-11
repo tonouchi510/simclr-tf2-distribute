@@ -21,7 +21,7 @@ If you want to know about `tf.distribute.Strategy`, see here https://www.tensorf
 
 ## Acknowledgements
 I reuse some of the code from [sayakpaul/SimCLR-in-TensorFlow-2](https://github.com/sayakpaul/SimCLR-in-TensorFlow-2) in this implementation.  
-Thanks for showing me the reference implementation by tf2.
+Thanks for showing me the reference minimal implementation by tf2.
 
 The differences in my implementation are the following points,
 - Supports distributed training, to train with huge batch sizes.
@@ -34,10 +34,13 @@ The differences in my implementation are the following points,
 ### Pre-required
 To train with CloudTPU, you need to prepare for the following,
 - Setup GCP project and enable CloudTPU
+- Create CloudTPU node
+  - Recommended: preemptive-tpu v3-8 ($2.4/h)
 - Convert the dataset to TFRecord files and upload to GCS.
   - When use TPU, all the files used during training need to be put in GCS.
   - example：gs://{{bucket_name}}/{{dataset_name}}/train-00001.tfrec ...
   - Click [here](https://www.tensorflow.org/tutorials/load_data/tfrecord) for documentation on tfrecord.
+- Set the environment variable "TPU_NAME"
 
 ```
 # Structure of gcs bucket (For your reference).
@@ -92,3 +95,12 @@ $ python scripts/linear-evaluation.py --batch_size=512 --job_dir=gs://{{bucket-n
      --embedded_dim=512 --num_classes=1000
 ```
 
+### Visualization
+
+Records of each experiment (Pretrain/Finetune/LE) is stored in the `gs://{{job_dir}}/{{task}}/logs` directory. 
+
+If you want to visualize the experimental results, start tensorboard and load these logs.
+
+```
+$ tensorboard --logdir gs://{{job_dir}}/{{task}}/logs
+```
