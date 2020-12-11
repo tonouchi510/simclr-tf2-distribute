@@ -1,0 +1,4 @@
+tensorflow==2.3.1
+cloud-tpu-client==0.10
+numpy==1.18.5
+google-cloud-storage==1.28.1
