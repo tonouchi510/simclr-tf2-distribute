@@ -1,11 +1,11 @@
-from tensorflow.keras.models import *
 import tensorflow as tf
+from tensorflow.keras.models import *
+from tensorflow.python.framework.ops import Tensor
 import numpy as np
 from absl import app
 from absl import flags
 from google.cloud import storage
 import os
-
 
 # Random seed fixation
 tf.random.set_seed(666)
@@ -50,7 +50,7 @@ def get_dataset(tfrecord_filepath: str, input_size: int):
     return dataset
 
 
-def read_tfrecord(example, size):
+def read_tfrecord(example: Tensor, size: int):
     features = {
         "image": tf.io.FixedLenFeature([], tf.string),  # tf.string = bytestring (not text string)
         "label": tf.io.FixedLenFeature([], tf.int64),  # one bytestring
@@ -98,7 +98,7 @@ def main(argv):
     if len(argv) > 1:
         raise app.UsageError('Too many command-line arguments.')
 
-    base_model = tf.keras.models.load_model(f"{FLAGS.job_dir}/{FLAGS.le_target}/saved_model)
+    base_model = tf.keras.models.load_model(f"{FLAGS.job_dir}/{FLAGS.le_target}/saved_model")
     if FLAGS.le_target == "pretrain":
         if FLAGS.proj_head == 0:
             model = Model(base_model.inputs, base_model.layers[-6].output)

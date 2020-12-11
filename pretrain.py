@@ -1,13 +1,14 @@
 import tensorflow as tf
+from tensorflow.keras.layers import *
+from tensorflow.keras.models import *
+from tensorflow.python.framework.ops import Tensor
 import numpy as np
 from absl import app
 from absl import flags
 
-from general import get_train_ds
-from model import SimCLRModel
-from data import read_tfrecord, CustomAugment
+from simclr import SimCLRModel
+from data import get_dataset
 from losses import simclr_loss_func
-from general import Training
 
 # Random seed fixation
 tf.random.set_seed(666)
@@ -47,7 +48,7 @@ flags.DEFINE_string(
     'GCS path for training job.')
 
 
-def build_model(model_type: str = "", n_dim: int = 128) -> (model: any, input_size: int):
+def build_model(model_type: str = "", n_dim: int = 512) -> (SimCLRModel, int):
     """Building model and return params.
 
     Args:
@@ -55,7 +56,7 @@ def build_model(model_type: str = "", n_dim: int = 128) -> (model: any, input_si
         n_dim (int): Number of embedded dimensions of the projection_head_3.
 
     Returns:
-        model (any): Object of SimCLRModel class.
+        model (SimCLRModel): Object of SimCLRModel class.
         input_size (int): Image size for input to model.
     """
     if model_type == 'resnet':
@@ -86,7 +87,7 @@ def build_model(model_type: str = "", n_dim: int = 128) -> (model: any, input_si
     return model, input_size
 
 
-def read_tfrecord(example, size: int):
+def read_tfrecord(example: Tensor, size: int):
     features = {
         "image": tf.io.FixedLenFeature([], tf.string),
         "label": tf.io.FixedLenFeature([], tf.int64),
@@ -132,6 +133,7 @@ def main(argv):
     callbacks = [tboard_callback]
 
     train_ds = get_dataset(FLAGS.dataset, "train", read_tfrecord, FLAGS.global_batch_size, input_size)
+
     for epoch in range(FLAGS.epochs):
         simclr_model.fit(train_ds, callbacks=callbacks, initial_epoch=epoch, epochs=epoch+1)
         simclr_model.save(f"{FLAGS.job_dir}/pretrain/checkpoints/{epoch+1}", include_optimizer=True)

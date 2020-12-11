@@ -15,5 +15,6 @@ def get_negative_mask(batch_size: int):
 
 
 def get_num_of_available_gpus():
+    # Helps when building training loops with gpu
     local_device_protos = device_lib.list_local_devices()
     return len([x.name for x in local_device_protos if x.device_type == 'GPU'])

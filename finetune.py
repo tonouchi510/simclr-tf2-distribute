@@ -1,5 +1,6 @@
 from tensorflow.keras.layers import *
 from tensorflow.keras.models import *
+from tensorflow.python.framework.ops import Tensor
 import tensorflow as tf
 import numpy as np
 from absl import app
@@ -42,11 +43,11 @@ flags.DEFINE_integer(
 
 flags.DEFINE_string(
     'num_classes', None,
-    'GCS path for saving artifacts.')
+    'Num of class label.')
 
 
 def build_model(num_classes: int) -> (any, int):
-    base_model = tf.keras.models.load_model(f"{FLAGS.job_dir}/pretrain/saved_model)
+    base_model = tf.keras.models.load_model(f"{FLAGS.job_dir}/pretrain/saved_model")
     base_model.trainable = True
 
     feature = None
@@ -62,7 +63,7 @@ def build_model(num_classes: int) -> (any, int):
     return model, model.input_shape[1]
 
 
-def read_tfrecord(example, size: int):
+def read_tfrecord(example: Tensor, size: int):
     features = {
         "image": tf.io.FixedLenFeature([], tf.string),
         "label": tf.io.FixedLenFeature([], tf.int64),
