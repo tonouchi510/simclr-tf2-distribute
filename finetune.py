@@ -19,7 +19,7 @@ flags.DEFINE_integer(
 
 flags.DEFINE_integer(
     'epochs', 100,
-    'Number of epochs to train for.')
+    'Number of epochs to train.')
 
 flags.DEFINE_float(
     'learning_rate', 0.001,

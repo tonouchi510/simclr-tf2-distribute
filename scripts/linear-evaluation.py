@@ -13,6 +13,10 @@ flags.DEFINE_integer(
     'batch_size', 512,
     'Batch size for training/eval.')
 
+flags.DEFINE_integer(
+    'epochs', 50,
+    'Number of epochs to train.')
+
 flags.DEFINE_string(
     'job_dir', None,
     'GCS path for training job management.')

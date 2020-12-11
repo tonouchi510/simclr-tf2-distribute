@@ -121,7 +121,7 @@ def main(argv):
     dataset_dir = FLAGS.dataset.split("/")[-1]
 
     client = storage.Client()
-    blobs = client.list_blobs(bucket_name, prefix=f"datasets/{dataset_dir)}")
+    blobs = client.list_blobs(bucket_name, prefix=f"datasets/{dataset_dir}")
     filelist = []
     for b in blobs:
         filelist.append(os.path.basename(b.name))
