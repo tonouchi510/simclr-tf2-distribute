@@ -70,7 +70,7 @@ gs://{{bucket_name}}/
 ### Pretrain
 
 ```
-$ python pretrain.py --global_batch_size=1024 --epochs=50 --learning_rate=0.0001 \
+$ python src/pretrain.py --global_batch_size=1024 --epochs=50 --learning_rate=0.0001 \
     --temperature=0.1 --embedded_dim=128 --dataset=gs://{{bucket-name}}/{{tfrecord_dir}} \
     --model="resnet" --job_dir=gs://{{bucket-name}}/{{job_dir}}
 ```
@@ -78,7 +78,7 @@ $ python pretrain.py --global_batch_size=1024 --epochs=50 --learning_rate=0.0001
 ### Finetune
 
 ```
-$ python finetune.py --global_batch_size=1024 --epochs=50 --learning_rate=0.0001 --proj_head=1 \
+$ python src/finetune.py --global_batch_size=1024 --epochs=50 --learning_rate=0.0001 --proj_head=1 \
     --percentage=10 --num_classes=1000 --dataset=gs://{{bucket-name}}/{{tfrecord_dir}} \
     --job_dir=gs://{{bucket-name}}/{{job_dir}}
 ```
